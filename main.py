@@ -18,18 +18,25 @@ def draw_grid(screen, grid) -> None:
 
 
 
-def grid_to_world_coords(coords: Vector2) -> Vector2:
+def grid_to_world(point: Vector2) -> Vector2:
     vector = Vector2()
-    vector.x = coords.x * WIDTH / GRID_SIZE
-    vector.y = coords.y * HEIGHT / GRID_SIZE
+    vector.x = point.x * WIDTH / GRID_SIZE
+    vector.y = point.y * HEIGHT / GRID_SIZE
 
     return vector
 
+def world_to_grid(point: Vector2) -> Vector2:
+    return Vector2(point.x / WIDTH * GRID_SIZE, point.y / HEIGHT * GRID_SIZE)
 
-def draw_player(screen, coords: Vector2) -> None:
-    
-    world_coords = grid_to_world_coords(coords)
+def draw_point(screen, pos_vector: Vector2) -> None:
+    world_coords = grid_to_world(pos_vector)
     pygame.draw.circle(screen, RED, (world_coords.x, world_coords.y), RADIUS)
+
+
+def draw_line(screen, p1: Vector2, p2: Vector2) -> None:
+    pf = grid_to_world(p1)
+    pe = grid_to_world(p2) 
+    pygame.draw.line(screen, GREEN, (pf.x, pf.y), (pe.x, pe.y))
 
 
 
@@ -40,17 +47,24 @@ def main() -> None:
     pygame.display.set_caption("Raycasting Prototype")
     clock = pygame.time.Clock()
 
-    coords = Vector2(3.7, 3.2)
+    player = Vector2(3.7, 3.2)
     
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 pygame.quit()
                 sys.exit(0)
-                   
+
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        mouse = Vector2(mouse_x, mouse_y)
+        mouse = world_to_grid(mouse)
+    
+
         screen.fill(BLACK)
+        draw_line(screen, player, mouse)
         draw_grid(screen, grid)
-        draw_player(screen, coords)
+        draw_point(screen, player)
+        draw_point(screen, mouse)
         pygame.display.update()
         clock.tick(FPS)
     
