@@ -14,5 +14,5 @@ GREEN = (0, 255, 0)
 BLUE  = (0, 0, 255)
 
 # Game
-GRID_SIZE = 5
+GRID_SIZE = 8
 RADIUS = 10

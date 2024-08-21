@@ -17,16 +17,13 @@ def draw_grid(screen, grid) -> None:
     pygame.draw.line(screen, WHITE, (0, HEIGHT - 1), (WIDTH, HEIGHT - 1)) 
 
 
-
 def grid_to_world(point: Vector2) -> Vector2:
-    vector = Vector2()
-    vector.x = point.x * WIDTH / GRID_SIZE
-    vector.y = point.y * HEIGHT / GRID_SIZE
+    return Vector2(point.x * WIDTH / GRID_SIZE, point.y * HEIGHT / GRID_SIZE)
 
-    return vector
 
 def world_to_grid(point: Vector2) -> Vector2:
     return Vector2(point.x / WIDTH * GRID_SIZE, point.y / HEIGHT * GRID_SIZE)
+
 
 def draw_point(screen, pos_vector: Vector2) -> None:
     world_coords = grid_to_world(pos_vector)
@@ -37,7 +34,6 @@ def draw_line(screen, p1: Vector2, p2: Vector2) -> None:
     pf = grid_to_world(p1)
     pe = grid_to_world(p2) 
     pygame.draw.line(screen, GREEN, (pf.x, pf.y), (pe.x, pe.y))
-
 
 
 def main() -> None: 
@@ -53,22 +49,38 @@ def main() -> None:
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 pygame.quit()
+                print("Exit succesfully!")
                 sys.exit(0)
+
 
         mouse_x, mouse_y = pygame.mouse.get_pos()
         mouse = Vector2(mouse_x, mouse_y)
         mouse = world_to_grid(mouse)
-    
+
+        if (mouse.x == player.x):
+            m = 0
+            new_p = Vector2(mouse.x, HEIGHT if mouse.x >= player.x else 0)
+        else:
+            m = (mouse.y - player.y) / (mouse.x - player.x)
+        
+            n = mouse.y - m * mouse.x
+
+            new_p = Vector2(x = player.x - mouse.x, y = m*(player.x - mouse.x)+n)
+
+
 
         screen.fill(BLACK)
-        draw_line(screen, player, mouse)
         draw_grid(screen, grid)
+        draw_line(screen, player, mouse)
+        draw_line(screen, mouse, new_p)
         draw_point(screen, player)
         draw_point(screen, mouse)
+        draw_point(screen, new_p)
         pygame.display.update()
         clock.tick(FPS)
     
 
-
 if __name__ == "__main__":
     main()
+
+
