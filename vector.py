@@ -13,6 +13,9 @@ class Vector2:
     def sub(self, other):
         return Vector2(self.x - other.x, self.y - other.y)
 
+    def add(self, other):
+        return Vector2(self.x + other.x, self.y + other.y)
+
     def abs(self):
         return Vector2(math.fabs(self.x), math.fabs(self.y))
 
