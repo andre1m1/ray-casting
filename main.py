@@ -40,19 +40,63 @@ def draw_line(screen, p1: Vector2, p2: Vector2) -> None:
     pygame.draw.line(screen, GREEN, (pf.x, pf.y), (pe.x, pe.y))
 
 
+def get_line_eq(p1: Vector2, p2:Vector2) -> (float, float):
+    if (p1.x == p2.x):
+        m = 0
+
+    else:
+        m = (p2.y - p1.y) / (p2.x - p1.x)
+    
+    n = p2.y - m * p2.x  
+    
+    return (m, n)
+
+
+def cast_ray(p1: Vector2, p2: Vector2) -> Vector2:
+
+    diff = p2.sub(p1)
+    m, n = get_line_eq(p1, p2)
+    # Find closest X axis collison
+    if m != 0:
+        if diff.y > 0:
+            dx = Vector2((math.ceil(p2.y) - n) / m, math.ceil(p2.y))
+        else:
+            dx = Vector2((math.floor(p2.y) - n) / m, math.floor(p2.y))
+    else:
+        dx = Vector2(0, n)
+        
+    # Find closest Y axis collision
+    if diff.x > 0:
+        dy = Vector2(math.ceil(p2.x), m * math.ceil(p2.x) + n)
+            
+    elif diff.x < 0:
+        dy = Vector2(math.floor(p2.x), m * math.floor(p2.x) + n)
+        
+    else:
+        if diff.y > 0:
+            dy = Vector2(p2.x, math.ceil(p2.y))
+        else:
+            dy = Vector2(p2.x, math.floor(p2.y))
+
+
+    if (p2.square_dist(dx) < p2.square_dist(dy)):
+        return dx
+
+    return dy
+
+
+
 def main() -> None: 
     grid : list(list(int)) = [[0 for i in range(GRID_SIZE)] for i in range(GRID_SIZE)]
     grid[1][1] = 1 
     grid[1][2] = 1 
     grid[1][3] = 1 
     grid[2][1] = 1
-    print(grid)
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Raycasting Prototype")
     clock = pygame.time.Clock()
 
     player = Vector2(3.7, 3.2)
-    
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -64,51 +108,19 @@ def main() -> None:
         mouse_x, mouse_y = pygame.mouse.get_pos()
         mouse = Vector2(mouse_x, mouse_y)
         mouse = world_to_grid(mouse)
-
-        diff = mouse.sub(player)
-    
-        if (mouse.x == player.x):
-            m = 0
-
-        else:
-            m = (mouse.y - player.y) / (mouse.x - player.x)
-          
-        n = mouse.y - m * mouse.x  
-        
-        if m != 0:
-            if diff.y > 0:
-                dx = Vector2((math.ceil(mouse.y) - n) / m, math.ceil(mouse.y))
-            else:
-                dx = Vector2((math.floor(mouse.y) - n) / m, math.floor(mouse.y))
-        else:
-            dx = Vector2(0, n)
-        
-
-        if diff.x > 0:
-            dy = Vector2(math.ceil(mouse.x), m * math.ceil(mouse.x) + n)
-            
-        elif diff.x < 0:
-            dy = Vector2(math.floor(mouse.x), m * math.floor(mouse.x) + n)
-        
-        else:
-            if diff.y > 0:
-                dy = Vector2(mouse.x, math.ceil(mouse.y))
-            else:
-                dy = Vector2(mouse.x, math.floor(mouse.y))
-
+        p3 = cast_ray(player, mouse)
+        p4 = cast_ray(mouse, p3)
 
         screen.fill(BLACK)
         draw_grid(screen, grid)
         draw_line(screen, player, mouse)
         draw_point(screen, player)
         draw_point(screen, mouse)
-        
-        if (mouse.square_dist(dx) < mouse.square_dist(dy)):
-            draw_point(screen, dx, BLUE)
-        else:
-            draw_point(screen, dy)
-
+        draw_point(screen, p3)
+        draw_point(screen, p4)
+        print(p3, p4)
         pygame.display.update()
+
         clock.tick(FPS)
     
 
