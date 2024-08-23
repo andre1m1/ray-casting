@@ -1,5 +1,6 @@
 import pygame
 import sys
+import math
 from vector import Vector2
 from settings import *
 
@@ -25,9 +26,9 @@ def world_to_grid(point: Vector2) -> Vector2:
     return Vector2(point.x / WIDTH * GRID_SIZE, point.y / HEIGHT * GRID_SIZE)
 
 
-def draw_point(screen, pos_vector: Vector2) -> None:
+def draw_point(screen, pos_vector: Vector2, color = RED) -> None:
     world_coords = grid_to_world(pos_vector)
-    pygame.draw.circle(screen, RED, (world_coords.x, world_coords.y), RADIUS)
+    pygame.draw.circle(screen, color, (world_coords.x, world_coords.y), RADIUS)
 
 
 def draw_line(screen, p1: Vector2, p2: Vector2) -> None:
@@ -57,25 +58,52 @@ def main() -> None:
         mouse = Vector2(mouse_x, mouse_y)
         mouse = world_to_grid(mouse)
 
+        diff = mouse.sub(player)
+    
+        #diff.x = (diff.x + GRID_SIZE) / GRID_SIZE
+        #diff.y = (diff.y + GRID_SIZE) / GRID_SIZE
+
         if (mouse.x == player.x):
             m = 0
-            new_p = Vector2(mouse.x, HEIGHT if mouse.x >= player.x else 0)
+
         else:
             m = (mouse.y - player.y) / (mouse.x - player.x)
+          
+        n = mouse.y - m * mouse.x  
+            
+        if m != 0:
+            if diff.y > 0:
+                dx = Vector2((math.ceil(mouse.y) - n) / m, math.ceil(mouse.y))
+            else:
+                dx = Vector2((math.floor(mouse.y) - n) / m, math.floor(mouse.y))
+        else:
+            dx = Vector2(0, n)
         
-            n = mouse.y - m * mouse.x
 
-            new_p = Vector2(x = player.x - mouse.x, y = m*(player.x - mouse.x)+n)
-
+        if diff.x > 0:
+            dy = Vector2(math.ceil(mouse.x), m * math.ceil(mouse.x) + n)
+            
+        elif diff.x < 0:
+            dy = Vector2(math.floor(mouse.x), m * math.floor(mouse.x) + n)
+        
+        else:
+            if diff.y > 0:
+                dy = Vector2(mouse.x, math.ceil(mouse.y))
+            else:
+                dy = Vector2(mouse.x, math.floor(mouse.y))
 
 
         screen.fill(BLACK)
         draw_grid(screen, grid)
         draw_line(screen, player, mouse)
-        draw_line(screen, mouse, new_p)
         draw_point(screen, player)
         draw_point(screen, mouse)
-        draw_point(screen, new_p)
+        
+        if (mouse.square_dist(dx) < mouse.square_dist(dy)):
+            draw_point(screen, dx, BLUE)
+        else:
+            draw_point(screen, dy)
+
         pygame.display.update()
         clock.tick(FPS)
     
