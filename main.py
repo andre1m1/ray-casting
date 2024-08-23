@@ -55,6 +55,9 @@ def get_line_eq(p1: Vector2, p2:Vector2) -> (float, float):
 def cast_ray(p1: Vector2, p2: Vector2) -> Vector2:
 
     diff = p2.sub(p1)
+    # TODO: Fix bug where adding eps causes ray to take an unexpected angle
+    eps = Vector2(EPS, EPS).mul(diff.sign())
+    
     m, n = get_line_eq(p1, p2)
     # Find closest X axis collison
     if m != 0:
@@ -80,9 +83,11 @@ def cast_ray(p1: Vector2, p2: Vector2) -> Vector2:
 
 
     if (p2.square_dist(dx) < p2.square_dist(dy)):
-        return dx
+        return dx.add(eps)
+        
+    
 
-    return dy
+    return dy.add(eps)
 
 
 
@@ -106,19 +111,27 @@ def main() -> None:
 
 
         mouse_x, mouse_y = pygame.mouse.get_pos()
+        if not (mouse_x or mouse_y):
+            mouse_x, mouse_y = 0, 0
         mouse = Vector2(mouse_x, mouse_y)
         mouse = world_to_grid(mouse)
-        p3 = cast_ray(player, mouse)
-        p4 = cast_ray(mouse, p3)
-
         screen.fill(BLACK)
         draw_grid(screen, grid)
         draw_line(screen, player, mouse)
         draw_point(screen, player)
         draw_point(screen, mouse)
-        draw_point(screen, p3)
-        draw_point(screen, p4)
-        print(p3, p4)
+        
+        p1, p2 = player, mouse
+
+        while (p2.x <= GRID_SIZE + EPS and p2.y <= GRID_SIZE + EPS) and (p2.x >= -EPS and p2.y >= -EPS):
+            draw_line(screen, p1, p2)
+            draw_point(screen, p1)
+            draw_point(screen, p2)
+
+            p3 = cast_ray(p1, p2)
+            p1 = p2
+            p2 = p3
+
         pygame.display.update()
 
         clock.tick(FPS)

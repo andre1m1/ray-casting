@@ -16,3 +16,4 @@ BLUE  = (0, 0, 255)
 # Game
 GRID_SIZE = 8
 RADIUS = 10
+EPS = 1e-4

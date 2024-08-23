@@ -27,3 +27,8 @@ class Vector2:
     
     def square_dist(self, other) -> float:
         return (other.x - self.x) ** 2 + (other.y - self.y) ** 2
+
+    def sign(self):
+        x = 1 if self.x >= 0 else -1
+        y = 1 if self.y >= 0 else -1
+        return Vector2(x, y)
