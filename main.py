@@ -11,6 +11,9 @@ pygame.init()
 def draw_grid(screen, grid) -> None:
     cell_size = WIDTH / GRID_SIZE
     for i in range(GRID_SIZE):
+        for j in range(GRID_SIZE):
+            if grid[i][j] != 0:
+                pygame.draw.rect(screen, WHITE, pygame.Rect(i*cell_size, j*cell_size, cell_size, cell_size))
         pygame.draw.line(screen, WHITE, (i*cell_size, 0), (i*cell_size, HEIGHT)) 
         pygame.draw.line(screen, WHITE, (0, i*cell_size), (WIDTH, i*cell_size)) 
     
@@ -39,7 +42,11 @@ def draw_line(screen, p1: Vector2, p2: Vector2) -> None:
 
 def main() -> None: 
     grid : list(list(int)) = [[0 for i in range(GRID_SIZE)] for i in range(GRID_SIZE)]
-
+    grid[1][1] = 1 
+    grid[1][2] = 1 
+    grid[1][3] = 1 
+    grid[2][1] = 1
+    print(grid)
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Raycasting Prototype")
     clock = pygame.time.Clock()
@@ -60,9 +67,6 @@ def main() -> None:
 
         diff = mouse.sub(player)
     
-        #diff.x = (diff.x + GRID_SIZE) / GRID_SIZE
-        #diff.y = (diff.y + GRID_SIZE) / GRID_SIZE
-
         if (mouse.x == player.x):
             m = 0
 
@@ -70,7 +74,7 @@ def main() -> None:
             m = (mouse.y - player.y) / (mouse.x - player.x)
           
         n = mouse.y - m * mouse.x  
-            
+        
         if m != 0:
             if diff.y > 0:
                 dx = Vector2((math.ceil(mouse.y) - n) / m, math.ceil(mouse.y))
