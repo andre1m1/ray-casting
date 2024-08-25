@@ -52,11 +52,8 @@ def get_line_eq(p1: Vector2, p2:Vector2) -> (float, float):
     return (m, n)
 
 
-def cast_ray(p1: Vector2, p2: Vector2) -> Vector2:
-    diff = p2.sub(p1)
-    # TODO: Fix bug where adding eps causes ray to take an unexpected angle
-    eps = Vector2(EPS, EPS).mul(diff.sign())
-    
+def cast_ray(p1: Vector2, p2: Vector2) -> (Vector2, Vector2):
+    diff = p2.sub(p1)    
     m, n = get_line_eq(p1, p2)
     # Find closest X axis collison
     if m != 0:
@@ -82,12 +79,29 @@ def cast_ray(p1: Vector2, p2: Vector2) -> Vector2:
 
 
     if (p2.square_dist(dx) < p2.square_dist(dy)):
-        return dx.add(eps)
+        return (dx, diff.sign())
         
-    
 
-    return dy.add(eps)
+    return (dy, diff.sign())
 
+
+def check_collision(p : Vector2, dir: Vector2, grid) -> bool:
+    if p.x < GRID_SIZE and p.y < GRID_SIZE:
+        if p.x == int(p.x):
+            if dir.x == -1 and grid[p.x - 1][math.floor(p.y)] != 0:
+                return True 
+        
+            elif dir.x == 1 and grid[p.x][math.floor(p.y)] != 0:
+                return True
+
+        else:
+            if dir.y == -1 and grid[math.floor(p.x)][p.y - 1] != 0:
+                return True
+
+            elif dir.y == 1 and grid[math.floor(p.x)][p.y] != 0:
+                return True
+
+    return False
 
 
 def main() -> None: 
@@ -96,6 +110,10 @@ def main() -> None:
     grid[1][2] = 1 
     grid[1][3] = 1 
     grid[2][1] = 1
+    grid[6][6] = 1
+    grid[7][5] = 1
+
+
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Raycasting Prototype")
     clock = pygame.time.Clock()
@@ -127,9 +145,15 @@ def main() -> None:
             draw_point(screen, p1)
             draw_point(screen, p2)
 
-            p3 = cast_ray(p1, p2)
+            p3, dir = cast_ray(p1, p2)
+            eps = Vector2(EPS, EPS).mul(dir)
+            if check_collision(p3, dir, grid):
+                draw_line(screen, p2, p3)
+                draw_point(screen, p3)
+                break
+            
             p1 = p2
-            p2 = p3
+            p2 = p3.add(eps)
 
         pygame.display.update()
 
