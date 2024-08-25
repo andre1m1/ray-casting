@@ -53,7 +53,6 @@ def get_line_eq(p1: Vector2, p2:Vector2) -> (float, float):
 
 
 def cast_ray(p1: Vector2, p2: Vector2) -> Vector2:
-
     diff = p2.sub(p1)
     # TODO: Fix bug where adding eps causes ray to take an unexpected angle
     eps = Vector2(EPS, EPS).mul(diff.sign())
@@ -113,7 +112,7 @@ def main() -> None:
         mouse_x, mouse_y = pygame.mouse.get_pos()
         if not (mouse_x or mouse_y):
             mouse_x, mouse_y = 0, 0
-        mouse = Vector2(mouse_x, mouse_y)
+        mouse = Vector2(mouse_x, mouse_y).add(Vector2(EPS, EPS))
         mouse = world_to_grid(mouse)
         screen.fill(BLACK)
         draw_grid(screen, grid)
