@@ -130,20 +130,24 @@ def main() -> None:
         mouse_x, mouse_y = pygame.mouse.get_pos()
         if not (mouse_x or mouse_y):
             mouse_x, mouse_y = 0, 0
-        mouse = Vector2(mouse_x, mouse_y).add(Vector2(EPS, EPS))
+        mouse = Vector2(mouse_x, mouse_y)
         mouse = world_to_grid(mouse)
+        if mouse.x == int(mouse.x):
+            mouse.x += EPS
+        if mouse.y == int(mouse.y):
+            mouse.y += EPS
         screen.fill(BLACK)
         draw_grid(screen, grid)
         draw_line(screen, player, mouse)
         draw_point(screen, player)
-        draw_point(screen, mouse)
+        #draw_point(screen, mouse)
         
         p1, p2 = player, mouse
 
         while (p2.x <= GRID_SIZE + EPS and p2.y <= GRID_SIZE + EPS) and (p2.x >= -EPS and p2.y >= -EPS):
             draw_line(screen, p1, p2)
-            draw_point(screen, p1)
-            draw_point(screen, p2)
+            #draw_point(screen, p1)
+            #draw_point(screen, p2)
 
             p3, dir = cast_ray(p1, p2)
             eps = Vector2(EPS, EPS).mul(dir)
