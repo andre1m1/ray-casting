@@ -19,7 +19,7 @@ class Vector2:
     def mul(self, other):
         return Vector2(self.x * other.x, self.y * other.y)
 
-    def mod(self) -> int:
+    def mod(self) -> float:
         return math.sqrt(self.x ** 2 + self.y ** 2)
     
     def abs(self):

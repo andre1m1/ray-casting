@@ -6,6 +6,7 @@ from settings import *
 
 pygame.init()
 
+type Grid = list[list[int]] 
 
 # SCREEN_WIDTH must be equal to SCREEN_HEIGHT for now
 def draw_grid(screen, grid) -> None:
@@ -40,19 +41,18 @@ def draw_line(screen, p1: Vector2, p2: Vector2) -> None:
     pygame.draw.line(screen, GREEN, (pf.x, pf.y), (pe.x, pe.y))
 
 
-def get_line_eq(p1: Vector2, p2:Vector2) -> (float, float):
-    if (p1.x == p2.x):
-        m = 0
-
-    else:
+def get_line_eq(p1: Vector2, p2:Vector2) -> tuple[float, float]:
+    m : float = 0.0
+    if (p1.x != p2.x):
         m = (p2.y - p1.y) / (p2.x - p1.x)
+
     
     n = p2.y - m * p2.x  
     
     return (m, n)
 
 
-def cast_ray(p1: Vector2, p2: Vector2) -> (Vector2, Vector2):
+def cast_ray(p1: Vector2, p2: Vector2) -> tuple[Vector2, Vector2]:
     diff = p2.sub(p1)    
     m, n = get_line_eq(p1, p2)
     # Find closest X axis collison
@@ -105,7 +105,7 @@ def check_collision(p : Vector2, dir: Vector2, grid) -> bool:
 
 
 def main() -> None: 
-    grid : list(list(int)) = [[0 for i in range(GRID_SIZE)] for i in range(GRID_SIZE)]
+    grid : Grid= [[0 for i in range(GRID_SIZE)] for i in range(GRID_SIZE)]
     grid[1][1] = 1 
     grid[1][2] = 1 
     grid[1][3] = 1 
