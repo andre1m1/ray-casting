@@ -1,3 +1,2 @@
 # Raycasting using pygame
-
-In this project I am attempting to write a simple game in Python using raycasting.
+This is a prototype for the raycasting algorithm. I moved the main development of the project to [ray-casting](https://github.com/pt0lemeu/ray-casting).
